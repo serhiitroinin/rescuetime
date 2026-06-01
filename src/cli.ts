@@ -3,6 +3,7 @@ import { Command } from "commander";
 import { setSecret, hasSecret } from "./lib/keychain.ts";
 import * as out from "./lib/output.ts";
 import { importFromLuff } from "./lib/import-luff.ts";
+import { readSecret } from "./lib/prompt.ts";
 import { rescuetimeProvider, productivityLabel } from "./providers/rescuetime.ts";
 import type { ProductivityProvider } from "./types.ts";
 
@@ -18,14 +19,19 @@ function fmtHours(seconds: number): string {
 // ── Program ──────────────────────────────────────────────────────
 
 const program = new Command();
-program.name("rescuetime").description("RescueTime productivity data CLI").version("0.1.0");
+program.name("rescuetime").description("RescueTime productivity data CLI").version("0.1.1");
 
 // ── Setup ────────────────────────────────────────────────────────
 
 program
-  .command("setup <apiKey>")
-  .description("Save RescueTime API key (stored in macOS Keychain)")
-  .action(async (apiKey: string) => {
+  .command("setup")
+  .description("Save RescueTime API key (prompted securely; stored in macOS Keychain)")
+  .action(async () => {
+    const apiKey = await readSecret("RescueTime API key: ");
+    if (!apiKey) {
+      out.error("No API key provided.");
+      process.exit(1);
+    }
     setSecret("api-key", apiKey);
     out.success("API key saved to Keychain.");
     try {
