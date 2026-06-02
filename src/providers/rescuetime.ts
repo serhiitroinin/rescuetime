@@ -67,7 +67,7 @@ function dateRange(days: number): { start: string; end: string } {
 
 // ── Mappers ──────────────────────────────────────────────────────
 
-function mapSummary(r: RawDailySummary): DailySummary {
+export function mapSummary(r: RawDailySummary): DailySummary {
   return {
     date: r.date,
     productivityPulse: r.productivity_pulse,
