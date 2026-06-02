@@ -19,7 +19,7 @@ function fmtHours(seconds: number): string {
 // ── Program ──────────────────────────────────────────────────────
 
 const program = new Command();
-program.name("rescuetime").description("RescueTime productivity data CLI").version("0.1.2");
+program.name("rescuetime").description("RescueTime productivity data CLI").version("0.1.3");
 
 // ── Setup ────────────────────────────────────────────────────────
 
