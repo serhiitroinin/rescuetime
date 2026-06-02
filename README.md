@@ -23,7 +23,7 @@ bun run src/cli.ts --help
 Get an API key from RescueTime → Account Settings → API → Manage API keys, then:
 
 ```sh
-rescuetime setup <api_key>
+rescuetime setup
 rescuetime status
 ```
 

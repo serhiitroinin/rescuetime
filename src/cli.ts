@@ -19,7 +19,7 @@ function fmtHours(seconds: number): string {
 // ── Program ──────────────────────────────────────────────────────
 
 const program = new Command();
-program.name("rescuetime").description("RescueTime productivity data CLI").version("0.1.1");
+program.name("rescuetime").description("RescueTime productivity data CLI").version("0.1.2");
 
 // ── Setup ────────────────────────────────────────────────────────
 
@@ -51,7 +51,7 @@ program
   .description("Check API connection")
   .action(async () => {
     if (!hasSecret("api-key")) {
-      out.error("No API key in Keychain. Run: rescuetime setup <api_key>");
+      out.error("No API key in Keychain. Run: rescuetime setup");
       process.exit(1);
     }
     try {
