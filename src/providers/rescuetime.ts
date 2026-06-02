@@ -51,8 +51,8 @@ function client(): HttpClient {
   return new HttpClient({ baseUrl: BASE_URL });
 }
 
-function apiKey(): string {
-  return requireSecret("api-key");
+async function apiKey(): Promise<string> {
+  return await requireSecret("api-key");
 }
 
 function dateRange(days: number): { start: string; end: string } {
@@ -103,7 +103,7 @@ export const rescuetimeProvider: ProductivityProvider = {
   async dailySummary(days) {
     const http = client();
     const raw = await http.get<RawDailySummary[]>("/anapi/daily_summary_feed", {
-      key: apiKey(),
+      key: (await apiKey()),
       format: "json",
     });
     return raw
@@ -116,7 +116,7 @@ export const rescuetimeProvider: ProductivityProvider = {
     const http = client();
     const { start, end } = dateRange(days);
     const raw = await http.get<RawAnalyticData>("/anapi/data", {
-      key: apiKey(),
+      key: (await apiKey()),
       format: "json",
       perspective: "rank",
       restrict_kind: "activity",
@@ -136,7 +136,7 @@ export const rescuetimeProvider: ProductivityProvider = {
     const http = client();
     const { start, end } = dateRange(days);
     const raw = await http.get<RawAnalyticData>("/anapi/data", {
-      key: apiKey(),
+      key: (await apiKey()),
       format: "json",
       perspective: "interval",
       resolution_time: "day",
@@ -175,7 +175,7 @@ export const rescuetimeProvider: ProductivityProvider = {
 
   async focusSessions() {
     const http = client();
-    const key = apiKey();
+    const key = (await apiKey());
     const [started, ended] = await Promise.all([
       http.get<RawFocusSession[]>("/anapi/focustime_started_feed", { key, format: "json" }),
       http.get<RawFocusSession[]>("/anapi/focustime_ended_feed", { key, format: "json" }),
@@ -195,7 +195,7 @@ export const rescuetimeProvider: ProductivityProvider = {
   async highlights() {
     const http = client();
     const raw = await http.get<RawHighlight[]>("/anapi/highlights_feed", {
-      key: apiKey(),
+      key: (await apiKey()),
       format: "json",
     });
     return (raw ?? []).slice(0, 20).map((h) => ({
@@ -206,7 +206,7 @@ export const rescuetimeProvider: ProductivityProvider = {
 
   async json(endpoint, days) {
     const http = client();
-    const key = apiKey();
+    const key = (await apiKey());
     switch (endpoint) {
       case "summary":
         return http.get("/anapi/daily_summary_feed", { key, format: "json" });

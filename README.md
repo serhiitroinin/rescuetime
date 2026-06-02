@@ -42,19 +42,6 @@ rescuetime highlights            # daily highlights
 rescuetime json summary          # raw JSON for any endpoint
 ```
 
-## Migrating from `luff`
-
-`rescuetime` was extracted from the `rescuetime` tool in the `luff` monorepo. To copy
-your existing API key from the old Keychain entry:
-
-```sh
-rescuetime auth-import-from-luff
-```
-
-This reads the credential stored under the legacy `luff-rescuetime` Keychain service and
-copies it to the standalone `rescuetime` service. It is idempotent and does not delete the
-original.
-
 ## License
 
 MIT

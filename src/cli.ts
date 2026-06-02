@@ -2,7 +2,6 @@
 import { Command } from "commander";
 import { setSecret, hasSecret } from "./lib/keychain.ts";
 import * as out from "./lib/output.ts";
-import { importFromLuff } from "./lib/import-luff.ts";
 import { readSecret } from "./lib/prompt.ts";
 import { rescuetimeProvider, productivityLabel } from "./providers/rescuetime.ts";
 import type { ProductivityProvider } from "./types.ts";
@@ -19,7 +18,7 @@ function fmtHours(seconds: number): string {
 // ── Program ──────────────────────────────────────────────────────
 
 const program = new Command();
-program.name("rescuetime").description("RescueTime productivity data CLI").version("0.1.3");
+program.name("rescuetime").description("RescueTime productivity data CLI").version("0.2.0");
 
 // ── Setup ────────────────────────────────────────────────────────
 
@@ -32,7 +31,7 @@ program
       out.error("No API key provided.");
       process.exit(1);
     }
-    setSecret("api-key", apiKey);
+    await setSecret("api-key", apiKey);
     out.success("API key saved to Keychain.");
     try {
       const data = await provider.dailySummary(1);
@@ -50,7 +49,7 @@ program
   .command("status")
   .description("Check API connection")
   .action(async () => {
-    if (!hasSecret("api-key")) {
+    if (!(await hasSecret("api-key"))) {
       out.error("No API key in Keychain. Run: rescuetime setup");
       process.exit(1);
     }
@@ -62,34 +61,6 @@ program
     } catch (e: unknown) {
       out.error((e as Error).message);
       process.exit(1);
-    }
-  });
-
-program
-  .command("auth-import-from-luff")
-  .description("One-shot: copy RescueTime key from legacy luff-rescuetime Keychain entry")
-  .addHelpText("after", `
-Details:
-  For users migrating from the 'rescuetime' tool shipped via the luff
-  monorepo. Reads the credential stored under the 'luff-rescuetime' Keychain
-  service and copies it to the standalone 'rescuetime' service. Idempotent.
-
-  The source entry is NOT deleted; remove it manually with:
-    security delete-generic-password -s luff-rescuetime -a api-key
-
-Example:
-  rescuetime auth-import-from-luff`)
-  .action(() => {
-    const { copied, missing } = importFromLuff();
-    if (copied.length === 0) {
-      out.error("No entries found under luff-rescuetime. Nothing to import.");
-      process.exit(1);
-    }
-    out.success(`Imported ${copied.length} entries from luff-rescuetime:`);
-    for (const k of copied) console.log(`  + ${k}`);
-    if (missing.length > 0) {
-      out.blank();
-      out.info(`Missing (not present in luff-rescuetime): ${missing.join(", ")}`);
     }
   });
 
